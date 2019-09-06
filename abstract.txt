@@ -1,0 +1,3 @@
+What is... it like to lower the mixed volume?
+
+The study of mixed volumes plays a central role in the Brunn-Minkowski theory, since it combines two fundamental notions of the area: Minkowski sums and volume. In this presentation we introduce the notion of mixed volume and examine some first properties.

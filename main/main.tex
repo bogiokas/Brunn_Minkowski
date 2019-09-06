@@ -1,0 +1,380 @@
+\documentclass{beamer}
+\mode<presentation>
+\usetheme{Frankfurt}
+\usecolortheme{seahorse}
+\usecolortheme{rose}
+\setbeamercovered{transparent}
+
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{positioning,3d,calc}
+
+\makeatletter
+\newenvironment<>{proofs}[1][\proofname]{
+	\par
+	\def\insertproofname{#1\@addpunct{.}}
+	\usebeamertemplate{proof begin}#2
+}{
+	\usebeamertemplate{proof end}
+}
+\newenvironment<>{proofc}{
+	\setbeamertemplate{proof begin}{\begin{block}{\proofname\ (cont.)}}
+	\par
+	\usebeamertemplate{proof begin}
+}{
+	\usebeamertemplate{proof end}
+}
+\newenvironment<>{proofe}{
+	\par
+	\pushQED{\qed}
+	\setbeamertemplate{proof begin}{\begin{block}{\proofname\ (cont.)}}
+	\usebeamertemplate{proof begin}
+}{
+	\popQED\usebeamertemplate{proof end}
+}
+\makeatother
+
+\title[What is... the mixed volume?]{What is... it like to lower the mixed volume?}
+\author{Dimitris Bogiokas}
+\institute{Freie Universit\"at Berlin}
+\date{BMS Friday - What is...? Seminar\\08. Feb. 2019}
+\subject{Mathematics}
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+\AtBeginSubsection[]{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+%\beamerdefaultoverlayspecification{<+->}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents[pausesections]
+\end{frame}
+
+\section{Setup}
+\begin{frame}{Ingredients}
+\begin{itemize}
+\item<2-> The set $\mathcal{K}_n$ of all \alert<2>{convex}, \alert<2>{compact} sets in $\mathbb{R}^n$.
+\item<3-> The set $\mathcal{P}_n\subseteq\mathcal{K}_n$ of all convex \alert<3>{polytopes} in $\mathbb{R}^n$.
+\item<4-> The \alert<4>{volume} $V_n(K)$ of some $K\in\mathcal{K}_n$.
+\item<5-> The \alert<5>{stretching} $\lambda K$ of some $K\in\mathcal{K}_n$, by any $\lambda\geq0$.
+\item<6-> The \alert<6>{Minkowski sum} $K+L$ of some $K,L\in\mathcal{K}_n$.
+\pause
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Minkowski Sum of Two Convex Bodies}
+\begin{definition} For any two $K,L\in\mathcal{K}_n$, the \alert{Minkowski sum} $K+L\in\mathcal{K}_n$ is the set of every vector sum:
+$$K+L:=\{u+v\in\mathbb{R}^n:u\in K,v\in L\}$$
+\end{definition}
+\vspace*{1.5em}
+\begin{center}
+\begin{tikzpicture}
+\coordinate (A) at (0,0);
+\coordinate (B) at (-3.5,1.3);
+\filldraw[draw=red!50,fill=red!10] (A) arc (-90:30:1) arc (120:180:1.732) -- cycle;
+\node at (-.4,.8) {$+$};
+\filldraw[draw=blue!50,fill=blue!10] (B) --++(2,0) arc (90:-90:.5) -- cycle;
+\node at (2,.8) {$=$};
+\coordinate (AB) at (3,.3);
+\filldraw[draw=blue!50!red!50,fill=blue!50!red!10] (AB) arc (180:120:1.732) -- ++(2,0) arc (90:30:.5) arc (30:-90:1.5) -- cycle;
+\filldraw<2-14>[draw=red!50,fill=red!10,opacity=.9] (AB) arc (-90:30:1) arc (120:180:1.732) -- cycle;
+\foreach\n in {2,3,...,8}{
+	\def\a{-130 + 20*\n};
+	\filldraw<\n>[blue!50,fill=blue!10,opacity=.9] (AB)++(90:1)++(\a:1) --++(2,0) arc (90:-90:.5) -- cycle;
+}
+\foreach\n in {9,10,...,14}{
+	\def\a{40 + 10*\n};
+	\filldraw<\n>[blue!50,fill=blue!10,opacity=.9] (AB)++(90:1)++(30:1)++(-60:1.732)++(\a:1.732) --++(2,0) arc (90:-90:.5) -- cycle;
+}
+\node<15> at (0,0) {};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\section{Talking About the Volumes}
+
+\begin{frame}{The Brunn-Minkowski Inequality}
+\begin{theorem}[Brunn '87, Minkowski '96]
+Let $K,L\in\mathcal{K}_n$ be two compact, convex sets, then:
+$$V_n(K+L)^{\frac{1}{n}}\geq V_n(K)^{\frac{1}{n}}+V_n(L)^{\frac{1}{n}}$$
+\end{theorem}
+\end{frame}
+\begin{frame}{Minkowski Sum Increases the Volume}
+\begin{corollary}
+Let $K,L\in\mathcal{K}_n$ be two compact, convex sets, then:
+$$V_n(K+L)\geq V_n(K)+V_n(L)$$
+\end{corollary}
+\begin{proof}<2->[Proof (by picture)]
+\begin{center}
+\begin{tikzpicture}
+\coordinate (A) at (0,0);
+\coordinate (B) at (-1.3,0);
+\filldraw[fill=red!10,draw=red!50] (A) -- ++(1,1) arc (45:-135:.7071) -- cycle;
+\node at (-.5,.5) {$+$};
+\filldraw[fill=blue!10,draw=blue!50] (B) -- ++(0,1) -- ++(-.5,0) -- cycle;
+\fill<3->[fill=red!60] (A)++(1,1) circle (2pt);
+\fill<3->[fill=blue!60] (B) circle (2pt);
+\node at (2,.5) {$=$};
+\coordinate (AB) at (3,-.5);
+\filldraw[fill=blue!50!red!10,draw=blue!50!red!50] (AB) -- ++(-.5,1) -- ++(1,1) -- ++(.5,0) arc (45:0:.7071) -- ++(0,-1) arc (0:-135:.7071) -- cycle;
+\filldraw<4->[fill=red!10,draw=red!50,opacity=.9] (AB) -- ++(1,1) arc (45:-135:.7071) -- cycle;
+\filldraw<4->[fill=blue!10,draw=blue!50,opacity=.9] (AB)++(1,1) -- ++(0,1) -- ++(-.5,0) -- cycle;
+\fill<3->[fill=blue!50!red!60] (AB)++(1,1) circle (2pt);
+\end{tikzpicture}
+\end{center}
+\end{proof}
+\end{frame}
+
+\begin{frame}{More Handwaving}
+\begin{proofs}[Proof of Brunn-Minkowski Inequality]
+For $K=[0,x_1]\times\cdots\times[0,x_n]$ and $L=[0,y_1]\times\cdots\times[0,y_n]$:
+\begin{align*}
+\frac{V_n(K)^{\frac{1}{n}}+V_n(L)^{\frac{1}{n}}}{V_n(K+L)^{\frac{1}{n}}}&=\left(\prod_{i=1}^n\frac{x_i}{x_i+y_i}\right)^{\frac{1}{n}}+\left(\prod_{i=1}^n\frac{y_i}{x_i+y_i}\right)^{\frac{1}{n}}\\
+&\leq\frac{1}{n}\sum_{i=1}^n\frac{x_i}{x_i+y_i}+\frac{1}{n}\sum_{i=1}^n\frac{y_i}{x_i+y_i}\\
+&=1
+\end{align*}
+\end{proofs}
+\end{frame}
+
+\begin{frame}{More Handwaving}
+\begin{proofc}
+For $K,L$ disjoint unions of open boxes:
+\begin{center}
+\begin{tikzpicture}
+\coordinate (A) at (3,.5);
+\coordinate (B) at (0,0);
+\filldraw[fill=blue!10,draw=blue!50] (B) -- ++(1,0) -- ++(0,2) -- ++(-1,0) -- cycle;
+\filldraw[fill=blue!10,draw=blue!50] (B)++(1,-.5) -- ++(1,0) -- ++(0,1) -- ++(-1,0) -- cycle;
+\filldraw[fill=blue!10,draw=blue!50] (B)++(1,.5) -- ++(.5,0) -- ++(0,1) -- ++(-.5,0) -- cycle;
+\node at (2.2,1.2) {$+$};
+\filldraw<1-3>[fill=red!10,draw=red!50] (A) -- ++(3,0) -- ++(0,1) -- ++(-3,0) -- cycle;
+\filldraw<1-3>[fill=red!10,draw=red!50] (A)++(3,.75) -- ++(0,1) -- ++(1.333,0) -- ++(0,-1) -- cycle;
+\draw<2-3>[dashed] (-1,.5) -- (8.333,.5);
+\node at (0,2.25) {};
+\node<3-> at (-.5,1) {$\frac{4}{7}$};
+\node<3-> at (-.5,0) {$\frac{3}{7}$};
+\filldraw<4->[fill=red!10,draw=red!50] (A)++(0,-.333) -- ++(3,0) -- ++(0,1) -- ++(-3,0) -- cycle;
+\filldraw<4->[fill=red!10,draw=red!50] (A)++(0,-.333)++(3,.75) -- ++(0,1) -- ++(1.333,0) -- ++(0,-1) -- cycle;
+\draw<4->[dashed] (-1,.5) -- (8.333,.5);
+\node<4-> at (.7,-.3) {$K_-$};
+\node<4-> at (1.5,1.8) {$K_+$};
+\node<4-> at (6.5,-.3) {$L_-$};
+\node<4-> at (5.5,1.8) {$L_+$};
+\end{tikzpicture}
+\end{center}
+\end{proofc}
+\end{frame}
+
+\begin{frame}{More Handwaving}
+\begin{proofe}
+\begin{align*}
+V_n(K+L)&\geq V_n(K_-+L_-)+V_n(K_++L_+)\\
+&\geq \left(V_n(K_-)^{\frac{1}{n}}+V_n(L_-)^{\frac{1}{n}}\right)^n+\left(V_n(K_+)^{\frac{1}{n}}+V_n(L_+)^{\frac{1}{n}}\right)^n\\
+&=V_n(K_-)\left(1+\frac{V_n(L)^{\frac{1}{n}}}{V_n(K)^{\frac{1}{n}}}\right)^n+V_n(K_+)\left(1+\frac{V_n(L)^{\frac{1}{n}}}{V_n(K)^{\frac{1}{n}}}\right)^n\\
+&=V_n(K)\left(1+\frac{V_n(L)^{\frac{1}{n}}}{V_n(K)^{\frac{1}{n}}}\right)^n=\left(V_n(K)^{\frac{1}{n}}+V_n(L)^{\frac{1}{n}}\right)^n
+\end{align*}
+For the general case, approximate with boxes.
+\end{proofe}
+\end{frame}
+
+\begin{frame}{Find Highest Volume Under Constant Surface Area}
+\begin{theorem}[Isoperimetric Inequality]
+Let $K\in\mathcal{K}_n$ be a compact, convex set, then:
+$$V_n(K)\leq V_n(rB^n)$$
+where $B_n$ is the unit ball of dimension $n$ and $r$ is chosen so that:
+$$V_{n-1}(K)=V_{n-1}(rB^n)$$
+\end{theorem}
+\pause
+\begin{corollary}
+An equivalent statement of the theorem is that for every $K\in\mathcal{K}_n$:
+$$\frac{V_n(K)^{\frac{1}{n}}}{V_{n-1}(K)^{\frac{1}{n-1}}}\leq\frac{V_n(B^n)^{\frac{1}{n}}}{V_{n-1}(B^n)^{\frac{1}{n-1}}}$$
+\end{corollary}
+\end{frame}
+
+\begin{frame}{But What is Surface Area?}
+\begin{definition}
+Let $K\in\mathcal{K}_n$. Then define the \alert{surface area} of $K$ to be the limit:
+$$V_{n-1}(K):=\lim_{\varepsilon\to0^+}\frac{V_n(K_{\varepsilon})-V_n(K)}{\varepsilon}$$
+where $K_{\varepsilon}:=K+\varepsilon B^n$.
+\end{definition}
+\pause
+\begin{example}
+\begin{align*}
+V_{n-1}(B^n)&=\lim_{\varepsilon\to0^+}\frac{V_n\big((1+\varepsilon)B^n\big)-V_n(B^n)}{\varepsilon}\\
+&=V_n(B^n)\lim_{\varepsilon\to0^+}\frac{(1+\varepsilon)^n-1}{\varepsilon}\\
+&=nV_n(B^n)
+\end{align*}
+\end{example}
+\end{frame}
+
+\begin{frame}{Proof of Isoperimetric using B-M}
+\begin{proof}[Proof of Isoperimetric Inequality]
+Let $\varepsilon>0$. Then:
+\begin{align*}
+\frac{V_n(K+\varepsilon B^n)-V_n(K)}{\varepsilon}&\geq\frac{\left(V_n(K)^{\frac{1}{n}}+\varepsilon V_n(B^n)^{\frac{1}{n}}\right)^n-V_n(K)}{\varepsilon}\\
+&=n\left(V_n(K)^{\frac{1}{n}}\right)^{n-1}V_n(B^n)^{\frac{1}{n}}+O(\varepsilon)
+\end{align*}
+Taking the limit on both sides, for $\varepsilon\to0^+$:
+\begin{align*}
+V_{n-1}(K)&\geq nV_n(K)^{\frac{n-1}{n}}V_n(B^n)^{\frac{1}{n}}\\
+\Rightarrow \frac{V_n(K)^{\frac{1}{n}}}{V_{n-1}(K)^{\frac{1}{n-1}}}&\leq\frac{V_n(B^n)^{\frac{1}{n}}}{V_{n-1}(B^n)^{\frac{1}{n-1}}}
+\qedhere
+\end{align*}
+\end{proof}
+\end{frame}
+
+\section{Mixed Volume}
+
+\begin{frame}{Can We Speak In General About Linear Combinations Of Convex Bodies?}
+\begin{example}
+Let $K=[0,1]^2$ and $L=B^2$. Then:
+$$V_2(\lambda K+\mu L)=\lambda^2+4\lambda\mu+\pi\mu^2$$
+\end{example}
+\only<1>{
+\begin{center}
+\begin{tikzpicture}
+\coordinate (O) at (0,0);
+\filldraw[fill=blue!50!red!10,draw=blue!50!red!50] (O) -- ++(2,0) arc (-90:0:1) -- ++(0,2) arc (0:90:1) -- ++(-2,0) arc (90:180:1) -- ++(0,-2) arc (180:270:1) --cycle;
+\draw[blue!50!red!50] (O) -- ++(0,4);
+\draw[blue!50!red!50] (O)++(2,0) -- ++(0,4);
+\draw[blue!50!red!50] (O)++(-1,1) -- ++(4,0);
+\draw[blue!50!red!50] (O)++(-1,1)++(0,2) -- ++(4,0);
+\end{tikzpicture}
+\end{center}
+}
+\only<2>{
+\begin{theorem}
+Let $K_1,\ldots,K_m\in\mathcal{K}_n$. Then, the Volume
+$$V_n(\lambda_1K_1+\cdots+\lambda_mK_m)$$
+is a homogeneous polynomial in $\lambda_1,\ldots,\lambda_m$
+\end{theorem}
+}
+\end{frame}
+
+\begin{frame}{Mixed Volumes}
+\begin{definition}
+Let $K_1,\ldots,K_n\in\mathcal{K}_n$, then their \alert{mixed Volume} $V(K_1,\ldots,K_n)$ is defined to be the coefficient of $\lambda_1\lambda_2\cdots\lambda_n$ of the polynomial $V_n(\lambda_1K_1+\cdots+\lambda_nK_n)$ over $n!$.
+\end{definition}
+\begin{corollary}
+For any $K_1,\ldots,K_m\in\mathcal{K}_n$, we can write:
+$$V_n(\lambda_1K_1+\cdots+\lambda_mK_m)=\sum_{i_1,\ldots,i_n\in[m]}V(K_{i_1},\ldots,K_{i_n})\lambda_{i_1}\cdots\lambda_{i_n}$$
+\end{corollary}
+\end{frame}
+
+\begin{frame}{Some Properties}
+\begin{description}[Multilinear]
+\item[Symmetric] $V(K_1,K_2,\ldots,K_n)=V(K_2,K_1,\ldots,K_n)$
+\item[Multilinear] $V(\lambda K_1+\mu K_1',K_2,\ldots,K_n)=\lambda V(K_1,K_2,\ldots,K_n)+\mu V(K_1',K_2,\ldots,K_n)$
+\item[Nomalized] $V(K,K,\ldots,K)=V_n(K)$
+\item[Monotone] $V(K_1,\ldots,K_n)\leq V(K_1',\ldots,K_n)$, if $K_1\subseteq K_1'$
+\end{description}
+\begin{example} In the example $K=[0,1]^2$, $L=B^2$ we had:
+$$V(\lambda K+\mu L)=\lambda^2+4\lambda\mu+\pi\mu^2$$
+And thus:
+\pause
+$$V(K,K)=1\qquad V(K,L)=V(L,K)=2\qquad V(L,L)=\pi$$
+\end{example}
+\end{frame}
+
+\begin{frame}{A Special Case That Motivated Us}
+We started at trying to compute $V_n(K+\varepsilon B^n)$.
+\begin{definition} Let $K\in\mathcal{K}_n$ and $i\in\{0,\ldots,n\}$. The $i$-th \alert{Quermassintegral} of $K$ is defined to be:
+$$W_i(K)=V(K,\ldots,K,B^n,\ldots,B^n)$$
+where we have $n-i$ copies of $K$ and $i$ copies of $B^n$
+\end{definition}
+\begin{corollary}
+$$V_n(K+rB^n)=\sum_{k=0}^n\binom{n}{k}W_i(K)r^i$$
+\end{corollary}
+\end{frame}
+
+\begin{frame}{But How Can We Compute The Mixed Volume}
+Using the inclusion-exclusion formula:
+\begin{theorem} Let $K_1,\ldots,K_n\in\mathcal{K}_n$. Then:
+$$V(K_1,\ldots,K_n)=\frac{1}{n!}\sum_{k=1}^n(-1)^{n+k}\sum_{i_1<\cdots<i_k}V_n(K_{i_1}+\cdots+K_{i_k})$$
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Mixed Subdivision}
+We now make a detour through Polytopes
+\begin{definition} Let $P_1,\ldots,P_m\in\mathcal{P}_n$. A \alert{subdivision} of $P_1+P_2+\cdots+P_m$ is a collection of cells $\mathcal{C}=\{F_1+F_2+\cdots+F_m:F_i\subseteq P_i\}$ partitioning the Minkowski sum $P_1+\cdots+P_n$, where each $F_i$ is a face of $P_i$.\\
+A subdivision is called \alert{fine}, if it is generic enough.
+\end{definition}
+\pause
+\begin{definition} Given $P_1,\ldots,P_n$ and $\mathcal{C}$ as above, a cell $C\in\mathcal{C}$ is called \alert{mixed}, if every face involved is of dimension $\leq1$.
+\end{definition}
+\end{frame}
+
+\begin{frame}{The Mixed Volume Equals the Sum of Volumes of the Mixed Cells}
+\begin{theorem}
+Let $P_1,\ldots,P_n\in\mathcal{P}_n$, $\mathcal{C}$ a fine subdivision of $P_1+\cdots+P_n$ and $\mathcal{M}\subseteq\mathcal{C}$ the set of all mixed cells of $\mathcal{C}$. Then:
+$$V(P_1,\ldots,P_n)=\sum_{C\in\mathcal{M}}V_n(C)$$
+\end{theorem}
+\begin{example}
+\begin{center}
+\begin{columns}
+\column{.4\textwidth}
+Let $P_1,P_2$ as in the picture, where the underlying lattice is $\mathbb{Z}^2$.
+\column{.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=.5]
+\coordinate (A) at (0,0);
+\coordinate (B) at (-3,0);
+\foreach\x in {0,1,2}
+	\draw[gray,thin] (A)++(\x,-.2) -- ++(0,2.4);
+\foreach\y in {0,1,2}
+	\draw[gray,thin] (A)++(-.2,\y) -- ++(2.4,0);
+\filldraw[fill=red!10, draw=red!50, thick] (A) -- ++(1,0) -- ++(0,1) -- ++(-1,0) -- cycle;
+\node at (.5,.5) {$P_2$};
+\node at (-.5,1) {$+$};
+\foreach\x in {0,1,2}
+	\draw[gray,thin] (B)++(\x,-.2) -- ++(0,2.4);
+\foreach\y in {0,1,2}
+	\draw[gray,thin] (B)++(-.2,\y) -- ++(2.4,0);
+\filldraw[fill=blue!10, draw=blue!50, thick] (B) -- ++(1,0) -- ++(1,1) -- ++(-1,0) -- cycle;
+\node at (-2,.5) {$P_1$};
+\coordinate (AB) at (3,0);
+\foreach\x in {0,1,2,3}
+	\draw[gray,thin] (AB)++(\x,-.2) -- ++(0,2.4);
+\foreach\y in {0,1,2}
+	\draw[gray,thin] (AB)++(-.2,\y) -- ++(3.4,0);
+\node at (2.5,1) {$=$};
+\fill[fill=blue!50!red!10] (AB) -- ++(2,0) -- ++(1,1) -- ++(0,1) -- ++(-2,0) -- ++(-1,-1) -- cycle;
+\draw[blue!50,thick] (AB) -- ++(1,0) -- ++(1,1) -- ++(-1,0) -- cycle;
+\draw[red!50,thick] (AB)++(1,0)++(1,1) -- ++(1,0) -- ++(0,1) -- ++(-1,0) -- cycle;
+\draw[blue!50,thick] (AB)++(0,1) -- ++(1,1) -- ++(1,0);
+\draw[blue!50,thick] (AB)++(2,0) -- ++(1,1);
+\draw[red!50,thick] (AB) -- ++(0,1);
+\draw[red!50,thick] (AB)++(1,1) -- ++(0,1);
+\draw[red!50,thick] (AB)++(1,0) -- ++(1,0);
+\foreach\p in {(0,0),(1,0),(2,0),(0,1),(1,1),(2,1),(3,1),(1,2),(2,2),(3,2)}
+	\fill[fill=blue!50!red!50] (AB)++\p circle (.7pt);
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{center}
+Then $V(P_1,P_2)=3$, because there are $3$ mixed cells in this decomposition, all having volume $1$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Finding Some Fine Subdivision}
+\begin{theorem}
+Let $P_1,\ldots,P_n\in\mathcal{P}_n$ generic enough polytopes and $\phi_1,\ldots,\phi_n:\mathbb{R}^n\to\mathbb{R}$ generic enough affine maps. The surface of $\phi_1P_1+\cdots+\phi_nP_n$ is naturally partitioned in some cells $\tilde{\mathcal{C}}$. Then, the lower (resp. upper) cell subdivision
+$$\mathcal{C}:=\left\{p(C):C\in\tilde{\mathcal{C}}^-\right\}$$
+is a fine subdivision of $P_1+\cdots+P_n$, where $\tilde{\mathcal{C}}^-$ are the cells subdividing the ``lower'' part of the surface.
+\end{theorem}
+\end{frame}
+
+\include{lastpicture}
+
+\end{document}

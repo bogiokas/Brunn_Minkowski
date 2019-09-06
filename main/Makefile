@@ -1,0 +1,2 @@
+prog:
+	pdflatex ./main.tex

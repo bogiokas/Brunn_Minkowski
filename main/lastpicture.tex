@@ -1,0 +1,212 @@
+%\documentclass{beamer}
+%\mode<presentation>
+%\usetheme{Frankfurt}
+%
+%\usepackage{tikz}
+%\usepackage{tikz-3dplot}
+%\usetikzlibrary{positioning,calc}
+%
+%\begin{document}
+\begin{frame}[fragile]{Projecting (Lowering) the Mixed Volume}
+\begin{center}
+\only<1-8>\tdplotsetmaincoords{0}{0}
+% 3d rotation
+\only<2-7>{\tdplotsetmaincoords{70}{15}}
+\begin{tikzpicture}[tdplot_main_coords,
+vrtx/.style={fill=#1!50},
+edge/.style={draw=#1!50, thick},
+face/.style={fill=#1!30, fill opacity=.7},
+both/.style={edge=#1, face=#1},
+grid/.style={gray!50,thin},
+lift/.style={draw=brown}]
+% colors
+\definecolor{cP}{rgb}{1,.5,.5};
+\definecolor{cQ}{rgb}{.5,.5,1};
+\colorlet{cPQ}{cP!50!cQ};
+% nmb of vcs
+\def\nP{4};
+\def\nQ{4};
+% definition of P,Q (relative)
+\begin{scope}[tdplot_screen_coords]
+\foreach\x/\y[count=\i] in {0/0,1/0,1/1,0/1}
+	\coordinate (P\i) at (\x,\y);
+\foreach\x/\y[count=\i] in {1/0,2/1,1.5/1.5,0/1}
+	\coordinate (Q\i) at (\x,\y);
+\end{scope}
+% basepoints
+\coordinate (bP) at (-2,0,0);
+\coordinate (bQ) at (0,0,0);
+\coordinate (bPQ) at (3,0,0);
+% affine maps
+\def\hP{3}
+\def\lP(#1,#2){-.8*#1+.3*#2};
+\def\hQ{3.5}
+\def\lQ(#1,#2){-.7*#2};%{.5*#1+.5*#2};
+\def\hPQ{3.5}
+% grid
+\def\maxP{1};
+\def\mayP{1};
+\def\maxQ{2};
+\def\mayQ{2};
+\pgfmathsetmacro\maxPQ{\maxP+\maxQ};
+\pgfmathsetmacro\mayPQ{\mayP+\mayQ};
+\foreach\name in {P,Q,PQ}{
+	\expandafter\let\expandafter\max\csname max\name\endcsname;
+	\expandafter\let\expandafter\may\csname may\name\endcsname;
+	\foreach\x in {0,...,\max}
+		\draw[grid] ($(b\name)+(\x,-.3,0)$) -- ($(b\name)+(\x,\may+.3,0)$);
+	\foreach\y in {0,...,\may}
+		\draw[grid] ($(b\name)+(-.3,\y,0)$) -- ($(b\name)+(\max+.3,\y,0)$);
+}
+
+%%%%% From this point it should work autmatically
+%%%%% for small perturbations
+% define (bP*),(bQ*)
+\foreach\name in {P,Q}{
+	\expandafter\let\expandafter\n\csname n\name\endcsname;
+	\foreach\i in {1,...,\n}
+		\path let \p1=(\name\i),\n1={\x1*1pt/1cm},\n2={\y1*1pt/1cm} in
+		coordinate (b\name\i) at
+		($(b\name)+(\n1,\n2,0)$);
+}
+% define (zbP*),(zbQ*) [lifts of P,Q]
+\foreach\name in {P,Q}{
+	\expandafter\let\expandafter\n\csname n\name\endcsname;
+	\expandafter\let\expandafter\l\csname l\name\endcsname;
+	\expandafter\let\expandafter\h\csname h\name\endcsname;
+	\foreach\i in {1,...,\n}{
+		\path let \p1=(\name\i),\n1={\x1*1pt/1cm},\n2={\y1*1pt/1cm} in
+		coordinate (zb\name\i)
+		at ($(b\name\i)+(0,0,\l(\n1,\n2)+\h)$);
+	}
+}
+% define (bPQ**)
+\foreach\i in {1,...,\nP}{
+	\foreach\j in {1,...,\nQ}
+		\path let \p1=(P\i),\p2=(Q\j),\n1={\x1*1pt/1cm},\n2={\y1*1pt/1cm},\n3={\x2*1pt/1cm},\n4={\y2*1pt/1cm} in
+		coordinate (bPQ\i\j) at
+		($(bPQ)+(\n1+\n3,\n2+\n4,0)$);
+}
+% define (zbPQ**) [lift of PQ]
+\foreach\i in {1,...,\nP}{
+	\foreach\j in {1,...,\nQ}{
+		\path let \p1=(P\i),\p2=(Q\j),\n1={\x1*1pt/1cm},\n2={\y1*1pt/1cm},\n3={\x2*1pt/1cm},\n4={\y2*1pt/1cm} in
+		coordinate (zbPQ\i\j) at
+		($(bPQ\i\j)+(0,0,{\lP(\n1,\n2)+\lQ(\n3,\n4)+\hPQ})$);
+	}
+}
+
+%%%%% START of draw commands
+% draw (bP*),(bQ*)
+\filldraw<1-8>[both=cP] (bP1) -- (bP2) -- (bP3) -- (bP4) -- cycle;
+\filldraw<1-8>[both=cQ] (bQ1) -- (bQ2) -- (bQ3) -- (bQ4) -- cycle;
+% draw lifted +/=
+\node<1> at ($.25*(bP)+.75*(bQ)+(0,.5,0)$) {$+$};
+\node<1> at ($.15*(bQ)+.85*(bPQ)+(0,.5,0)$) {$=$};
+% draw (bPQ**)
+\draw<1-5>[both=cPQ] (bPQ11)--(bPQ21)--(bPQ22)--(bPQ32)--(bPQ33)--(bPQ43)--(bPQ44)--(bPQ14)--cycle;
+
+\only<3-6>{
+	% draw lifts for P
+	\foreach\i in {1,...,\nP}{
+		\draw[lift] (bP\i)--(zbP\i);
+	}
+	% draw (zbP*)
+	\filldraw[both=cP] (zbP1) -- (zbP2) -- (zbP3) -- (zbP4) -- cycle;
+	% draw (zbQ*)
+	\filldraw[both=cQ] (zbQ1) -- (zbQ2) -- (zbQ3) -- (zbQ4) -- cycle;
+	% draw lifts for Q
+	\foreach\i in {1,...,\nQ}{
+		\draw[lift] (bQ\i)--(zbQ\i);
+	}
+}
+\only<4-6>{
+	% draw lifted +/=
+	\node<4> at ($.1*(bP)+.9*(bQ)+.5*(0,.5,\hP+\hQ)$) {$+$};
+	\node<4> at ($.1*(bQ)+.9*(bPQ)+.5*(0,.5,\hP+\hQ)$) {$=$};
+	% draw the back lift lines
+	\foreach\i/\j in {1/4,2/4,3/4,4/4,4/3,3/3,3/2,2/3,2/2}{
+		\draw<6>[lift] (bPQ\i\j)--(zbPQ\i\j);
+	}
+	% draw lifted faces under
+	\filldraw[both=cP] (zbPQ14)--(zbPQ24)--(zbPQ34)--(zbPQ44)--cycle;
+	\foreach\i in {1,2,3,4}{
+		\fill[vrtx=cPQ] (zbPQ\i4) circle (1pt);
+	}
+	\foreach\ia/\ib/\ja/\jb in {3/4/3/4,2/3/3/4,2/3/2/3,1/2/4/1}{
+		\fill[face=cPQ] (zbPQ\ia\ja)--(zbPQ\ib\ja)--(zbPQ\ib\jb)--(zbPQ\ia\jb)--cycle;
+		\draw[edge=cQ] (zbPQ\ia\ja)--(zbPQ\ia\jb);
+		\draw[edge=cQ] (zbPQ\ib\ja)--(zbPQ\ib\jb);
+		\draw[edge=cP] (zbPQ\ia\ja)--(zbPQ\ib\ja);
+		\draw[edge=cP] (zbPQ\ia\jb)--(zbPQ\ib\jb);
+		\foreach\i in {\ia,\ib}{
+			\foreach\j in {\ja,\jb}{
+				\fill[vrtx=cPQ] (zbPQ\i\j) circle (1pt);
+			}
+		}
+	}
+	\filldraw[both=cQ] (zbPQ21)--(zbPQ22)--(zbPQ23)--(zbPQ24)--cycle;
+	\foreach\j in {1,2,3,4}{
+		\fill[vrtx=cPQ] (zbPQ2\j) circle (1pt);
+	}
+	% draw lift of the boundary ob (bPQ**)
+	\draw<5-6> (zbPQ11)--(zbPQ21)--(zbPQ22)--(zbPQ32)--(zbPQ33)--(zbPQ43)--(zbPQ44)--(zbPQ14)--cycle;
+	% draw lifted faces above
+	\filldraw<4>[both=cQ] (zbPQ41)--(zbPQ42)--(zbPQ43)--(zbPQ44)--cycle;
+	\foreach\j in {1,2,3,4}{
+		\fill<4>[vrtx=cPQ] (zbPQ4\j) circle (1pt);
+	}
+	\foreach\ia/\ib/\ja/\jb in {4/1/4/1,3/4/2/3,4/1/1/2,1/2/1/2}{
+		\fill<4>[face=cPQ] (zbPQ\ia\ja)--(zbPQ\ib\ja)--(zbPQ\ib\jb)--(zbPQ\ia\jb)--cycle;
+		\draw<4>[edge=cQ] (zbPQ\ia\ja)--(zbPQ\ia\jb);
+		\draw<4>[edge=cQ] (zbPQ\ib\ja)--(zbPQ\ib\jb);
+		\draw<4>[edge=cP] (zbPQ\ia\ja)--(zbPQ\ib\ja);
+		\draw<4>[edge=cP] (zbPQ\ia\jb)--(zbPQ\ib\jb);
+		\foreach\i in {\ia,\ib}{
+			\foreach\j in {\ja,\jb}{
+				\fill<4>[vrtx=cPQ] (zbPQ\i\j) circle (1pt);
+			}
+		}
+	}
+	\filldraw<4>[both=cP] (zbPQ12)--(zbPQ22)--(zbPQ32)--(zbPQ42)--cycle;
+	\foreach\i in {1,2,3,4}{
+		\fill<4>[vrtx=cPQ] (zbPQ\i2) circle (1pt);
+	}
+	% draw missing lift lines
+	\foreach\i/\j in {1/1,2/1}{
+		\draw<6>[lift] (bPQ\i\j)--(zbPQ\i\j);
+	}
+}
+% draw projections
+\filldraw<6->[both=cP] (bPQ14)--(bPQ24)--(bPQ34)--(bPQ44)--cycle;
+\foreach\ia/\ib/\ja/\jb in {3/4/3/4,2/3/3/4,2/3/2/3,1/2/4/1}{
+	\fill<6->[face=cPQ] (bPQ\ia\ja)--(bPQ\ib\ja)--(bPQ\ib\jb)--(bPQ\ia\jb)--cycle;
+	\draw<6->[edge=cQ] (bPQ\ia\ja)--(bPQ\ia\jb);
+	\draw<6->[edge=cQ] (bPQ\ib\ja)--(bPQ\ib\jb);
+	\draw<6->[edge=cP] (bPQ\ia\ja)--(bPQ\ib\ja);
+	\draw<6->[edge=cP] (bPQ\ia\jb)--(bPQ\ib\jb);
+}
+\filldraw<6->[both=cQ] (bPQ21)--(bPQ22)--(bPQ23)--(bPQ24)--cycle;
+\foreach\i/\j in {1/4,2/4,3/4,4/4,2/1,2/2,2/3,1/1,3/2,3/3,4/3}{
+	\fill<6->[vrtx=cPQ] (bPQ\i\j) circle (1pt);
+}
+
+%%%%% ONLY for debug purposes
+%%draw colored edges inside (zbPQ**)
+%\foreach\i in {1,...,\nP}{
+%	\draw[edge=cQ] (zbPQ\i1) -- (zbPQ\i2) -- (zbPQ\i3) -- (zbPQ\i4) -- cycle;
+%}
+%\foreach\j in {1,...,\nQ}{
+%	\draw[edge=cP] (zbPQ1\j) -- (zbPQ2\j) -- (zbPQ3\j) -- (zbPQ4\j) -- cycle;
+%}
+%%draw vertices inside (zbPQ**)
+%\foreach\i in {1,...,\nP}{
+%	\foreach\j in {1,...,\nQ}{
+%		\draw[lift] (bPQ\i\j)--(zbPQ\i\j);
+%		\fill[vrtx=cPQ] (zbPQ\i\j) circle (2pt);
+%	}
+%}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+%\end{document}

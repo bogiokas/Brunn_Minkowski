@@ -1,0 +1,4 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{Setup}{5}{0}{1}
+\beamer@sectionintoc {2}{Talking About the Volumes}{26}{0}{2}
+\beamer@sectionintoc {3}{Mixed Volume}{42}{0}{3}
